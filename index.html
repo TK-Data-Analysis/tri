@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reliability Indices Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Reliability Indices Calculator</h1>
+            <p>Compare the Total Reliability Index (TRI) with traditional reliability measures</p>
+        </header>
+
+        <div class="input-section">
+            <h2>Input Data</h2>
+            <div class="input-methods">
+                <div class="input-method">
+                    <h3>Upload CSV File</h3>
+                    <p>CSV should contain items as columns and respondents as rows</p>
+                    <input type="file" id="csv-upload" accept=".csv">
+                    <button id="load-csv-btn">Load CSV</button>
+                </div>
+                <div class="input-method">
+                    <h3>Use Example Data</h3>
+                    <p>Load a pre-defined dataset to explore the indices</p>
+                    <button id="load-example-btn">Load Example Data</button>
+                </div>
+                <div class="input-method">
+                    <h3>Paste Data</h3>
+                    <p>Paste CSV data (comma-separated)</p>
+                    <textarea id="paste-data" placeholder="Item1,Item2,Item3,Item4
+3,4,3,2
+1,1,2,1
+5,5,6,4
+4,3,4,3
+2,2,3,2"></textarea>
+                    <button id="load-paste-btn">Parse Data</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-preview" id="data-preview">
+            <h2>Data Preview</h2>
+            <p id="data-dimensions"></p>
+            <div class="data-table-container">
+                <table id="data-table"></table>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button id="calculate-btn" disabled>Calculate Reliability Indices</button>
+        </div>
+
+        <div class="results-section" id="results-section">
+            <h2>Reliability Analysis Results</h2>
+            
+            <div class="results-summary">
+                <div class="result-card">
+                    <h3>Total Reliability Index (TRI)</h3>
+                    <p class="value" id="tri-value">-</p>
+                    <div class="description">
+                        <p>Integrates between-person and within-person variability while adjusting for systematic vs. error variance.</p>
+                    </div>
+                </div>
+                <div class="result-card">
+                    <h3>Cronbach's Alpha</h3>
+                    <p class="value" id="alpha-value">-</p>
+                    <div class="description">
+                        <p>Measures internal consistency based on inter-item correlations.</p>
+                    </div>
+                </div>
+                <div class="result-card">
+                    <h3>McDonald's Omega</h3>
+                    <p class="value" id="omega-value">-</p>
+                    <div class="description">
+                        <p>Accounts for item heterogeneity using factor loadings.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detailed-results">
+                <h3>Detailed Analysis</h3>
+                <div class="tri-components" id="tri-components">
+                    <h4>TRI Variance Components</h4>
+                    <div class="component-values">
+                        <p><strong>Between-Person Variance:</strong> <span id="between-variance">-</span></p>
+                        <p><strong>Within-Person Variance:</strong> <span id="within-variance">-</span></p>
+                        <p><strong>Systematic-to-Error Ratio:</strong> <span id="error-ratio">-</span></p>
+                        <p><strong>Systematic Variance:</strong> <span id="systematic-variance">-</span></p>
+                        <p><strong>Error Variance:</strong> <span id="error-variance">-</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="visualization">
+                <h3>Comparison Chart</h3>
+                <div class="chart-container">
+                    <canvas id="reliability-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="documentation">
+            <h2>Understanding the Indices</h2>
+            <div class="explanation">
+                <h3>Total Reliability Index (TRI)</h3>
+                <p>The TRI systematically integrates between-person and within-person variability from multiple items in a single administration while adjusting for systematic and error variance. It addresses limitations of traditional indices by capturing both cross-sectional differences and individual response stability.</p>
+                <p><strong>Formula:</strong></p>
+                <div class="formula">
+                    TRI = (k/(k-1)) × (1 - (Between-Person Variance + Adjusted Within-Person Variance) / 
+                    (Total Variance + Adjusted Within-Person Variance))
+                </div>
+            </div>
+            <div class="explanation">
+                <h3>Cronbach's Alpha</h3>
+                <p>A widely used index that estimates internal consistency by assessing inter-item correlations. Alpha assumes tau-equivalence (equal item contributions) and unidimensionality.</p>
+                <p><strong>Formula:</strong></p>
+                <div class="formula">
+                    α = (k/(k-1)) × (1 - (Σ individual item variances) / total variance)
+                </div>
+            </div>
+            <div class="explanation">
+                <h3>McDonald's Omega</h3>
+                <p>Accommodates unequal item contributions through factor loadings. Omega addresses some limitations of Alpha but requires factor analysis estimation.</p>
+                <p><strong>Formula:</strong></p>
+                <div class="formula">
+                    ω = (Σ standardized loadings)² / ((Σ standardized loadings)² + Σ error variances)
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <div class="implementation-info">
+                <p>Implementation of the Total Reliability Index (TRI) based on Analysis of Variance principles</p>
+            </div>
+            
+            <div class="author-info">
+                <h3>Authors</h3>
+                <p><strong>Theodoros Kyriazos<sup>1</sup>*</strong> &amp; <strong>Mary Poga<sup>2</sup></strong></p>
+                <p class="author-correspondence">*Corresponding author. E-mail: <a href="mailto:th.kyriazos@gmail.com">th.kyriazos@gmail.com</a> | 
+                    <a href="https://orcid.org/0000-0002-4396-7057" target="_blank">ORCID: 0000-0002-4396-7057</a></p>
+                
+                <div class="author-affiliations">
+                    <p><sup>1</sup>Department of Psychology, Panteion University, Athens, Greece</p>
+                    <p><sup>2</sup>Independent Researcher, E-mail: <a href="mailto:marypoga73@gmail.com">marypoga73@gmail.com</a>, Athens, Greece</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/numeric@1.2.6/numeric.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
