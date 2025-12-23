@@ -3,18 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Reliability Indices Calculator</title>
+    <title>Reliability Indices Calculator (TRI, α, ω)</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .subtle { font-size: 0.95em; color: #667085; line-height: 1.4; }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Reliability Indices Calculator</h1>
-            <p>Compare the Total Reliability Index (TRI) with traditional reliability measures</p>
+            <p>Compute the Total Reliability Index (TRI) alongside Cronbach's α and McDonald's ω</p>
+            <p class="subtle">
+                TRI is a variance-ratio reliability coefficient operationalized on the <em>within-person axis</em> of an item-by-person matrix, targeting
+                <strong>response-profile coherence</strong> in the standard single-administration, multi-item setting.
+            </p>
         </header>
 
         <div class="input-section">
             <h2>Input Data</h2>
+            <p class="subtle">All computations run locally in your browser; no data are transmitted to a server.</p>
             <div class="input-methods">
                 <div class="input-method">
                     <h3>Upload CSV File</h3>
@@ -24,7 +32,7 @@
                 </div>
                 <div class="input-method">
                     <h3>Use Example Data</h3>
-                    <p>Load a pre-defined dataset to explore the indices</p>
+                    <p>Load a small dataset to explore the indices</p>
                     <button id="load-example-btn">Load Example Data</button>
                 </div>
                 <div class="input-method">
@@ -55,42 +63,47 @@
 
         <div class="results-section" id="results-section">
             <h2>Reliability Analysis Results</h2>
-            
+
             <div class="results-summary">
                 <div class="result-card">
                     <h3>Total Reliability Index (TRI)</h3>
                     <p class="value" id="tri-value">-</p>
                     <div class="description">
-                        <p>Integrates between-person and within-person variability while adjusting for systematic vs. error variance.</p>
+                        <p>Variance-ratio reliability targeting within-person response-profile coherence (single administration).</p>
                     </div>
                 </div>
                 <div class="result-card">
-                    <h3>Cronbach's Alpha</h3>
+                    <h3>Cronbach's Alpha (α)</h3>
                     <p class="value" id="alpha-value">-</p>
                     <div class="description">
-                        <p>Measures internal consistency based on inter-item correlations.</p>
+                        <p>Between-person internal consistency based on the inter-item covariance structure (tau-equivalence assumed).</p>
                     </div>
                 </div>
                 <div class="result-card">
-                    <h3>McDonald's Omega</h3>
+                    <h3>McDonald's Omega (ω)</h3>
                     <p class="value" id="omega-value">-</p>
                     <div class="description">
-                        <p>Accounts for item heterogeneity using factor loadings.</p>
+                        <p>Between-person reliability from a factor model allowing unequal item contributions (model-dependent).</p>
                     </div>
                 </div>
             </div>
 
             <div class="detailed-results">
-                <h3>Detailed Analysis</h3>
+                <h3>TRI Decomposition (Operational Components)</h3>
                 <div class="tri-components" id="tri-components">
-                    <h4>TRI Variance Components</h4>
+                    <h4>Displayed quantities</h4>
                     <div class="component-values">
-                        <p><strong>Between-Person Variance:</strong> <span id="between-variance">-</span></p>
-                        <p><strong>Within-Person Variance:</strong> <span id="within-variance">-</span></p>
-                        <p><strong>Systematic-to-Error Ratio:</strong> <span id="error-ratio">-</span></p>
-                        <p><strong>Systematic Variance:</strong> <span id="systematic-variance">-</span></p>
-                        <p><strong>Error Variance:</strong> <span id="error-variance">-</span></p>
+                        <p><strong>Σ Var(item):</strong> <span id="between-variance">-</span> <span class="subtle"> (sum of item variances across respondents)</span></p>
+                        <p><strong>Mean within-person dispersion:</strong> <span id="within-variance">-</span> <span class="subtle"> (mean of respondent-wise item variances)</span></p>
+                        <p><strong>Calibration ratio (r):</strong> <span id="error-ratio">-</span>
+                           <span class="subtle"> where r = mean Var(item) / Var(Σ items)</span></p>
+                        <p><strong>TRI:</strong> <span id="systematic-variance">-</span> <span class="subtle"> (reported coefficient)</span></p>
+                        <p><strong>1 − TRI:</strong> <span id="error-variance">-</span> <span class="subtle"> (complement; not a direct error-variance estimate)</span></p>
                     </div>
+                    <p class="subtle">
+                        The ratio <em>r</em> is an operational <strong>normalization</strong> that rescales within-person dispersion to the summed-score metric.
+                        It is used as a calibration factor, not as a direct estimator of “systematic” versus “error” variance.
+                    </p>
                 </div>
             </div>
 
@@ -104,47 +117,72 @@
 
         <div class="documentation">
             <h2>Understanding the Indices</h2>
+
             <div class="explanation">
                 <h3>Total Reliability Index (TRI)</h3>
-                <p>The TRI systematically integrates between-person and within-person variability from multiple items in a single administration while adjusting for systematic and error variance. It addresses limitations of traditional indices by capturing both cross-sectional differences and individual response stability.</p>
-                <p><strong>Formula:</strong></p>
+                <p>
+                    TRI is a variance-ratio reliability coefficient defined under the same core reliability principle as classical indices (systematic-to-total variance),
+                    but <strong>operationalized on the within-person axis</strong> of the response matrix to quantify <strong>response-profile coherence</strong>
+                    across items within a single administration.
+                </p>
+                <p>
+                    Within-person variability is descriptive and can reflect either reproducible structure or residual noise. TRI is designed to make the within-person
+                    component explicit, while remaining complementary to between-person coefficients such as α and ω.
+                </p>
+                <p><strong>Operational formula used in this calculator:</strong></p>
                 <div class="formula">
-                    TRI = (k/(k-1)) × (1 - (Between-Person Variance + Adjusted Within-Person Variance) / 
-                    (Total Variance + Adjusted Within-Person Variance))
+                    TRI = (k/(k-1)) × { 1 − [ ΣVar(X<sub>j</sub>) + r·mean(Var<sub>i</sub>) ] / [ Var(ΣX) + r·mean(Var<sub>i</sub>) ] } <br>
+                    where r = mean(Var(X<sub>j</sub>)) / Var(ΣX), k = number of items, Var<sub>i</sub> = variance across items within respondent i.
                 </div>
             </div>
+
             <div class="explanation">
-                <h3>Cronbach's Alpha</h3>
-                <p>A widely used index that estimates internal consistency by assessing inter-item correlations. Alpha assumes tau-equivalence (equal item contributions) and unidimensionality.</p>
+                <h3>Cronbach's Alpha (α)</h3>
+                <p>
+                    A widely used index of internal consistency driven by the between-person covariance structure of item responses.
+                    α is primarily informative for between-person discrimination under assumptions including tau-equivalence and unidimensionality.
+                </p>
                 <p><strong>Formula:</strong></p>
                 <div class="formula">
-                    α = (k/(k-1)) × (1 - (Σ individual item variances) / total variance)
+                    α = (k/(k-1)) × (1 − (Σ Var(X<sub>j</sub>)) / Var(ΣX))
                 </div>
             </div>
+
             <div class="explanation">
-                <h3>McDonald's Omega</h3>
-                <p>Accommodates unequal item contributions through factor loadings. Omega addresses some limitations of Alpha but requires factor analysis estimation.</p>
-                <p><strong>Formula:</strong></p>
+                <h3>McDonald's Omega (ω)</h3>
+                <p>
+                    A factor-model-based reliability estimate that accommodates unequal item contributions via factor loadings.
+                    ω depends on the fitted measurement model and its adequacy for the data.
+                </p>
+                <p><strong>Formula (total omega, schematic):</strong></p>
                 <div class="formula">
-                    ω = (Σ standardized loadings)² / ((Σ standardized loadings)² + Σ error variances)
+                    ω = (Σ λ<sub>j</sub>)² / [ (Σ λ<sub>j</sub>)² + Σ θ<sub>j</sub> ]
                 </div>
             </div>
         </div>
 
         <footer>
             <div class="implementation-info">
-                <p>Implementation of the Total Reliability Index (TRI) based on Analysis of Variance principles</p>
+                <p>Implementation of TRI based on ANOVA-style variance decomposition and a goal-dependent, two-axis reliability framework</p>
             </div>
-            
+
             <div class="author-info">
                 <h3>Authors</h3>
                 <p><strong>Theodoros Kyriazos<sup>1</sup>*</strong> &amp; <strong>Mary Poga<sup>2</sup></strong></p>
-                <p class="author-correspondence">*Corresponding author. E-mail: <a href="mailto:th.kyriazos@gmail.com">th.kyriazos@gmail.com</a> | 
-                    <a href="https://orcid.org/0000-0002-4396-7057" target="_blank">ORCID: 0000-0002-4396-7057</a></p>
-                
+
+                <p class="author-correspondence">
+                    *Corresponding author.
+                    E-mail: <a href="mailto:aff01359@uowm.gr">aff01359@uowm.gr</a> |
+                    Phone: +30 2385055201 |
+                    <a href="https://orcid.org/0000-0002-4396-7057" target="_blank" rel="noopener">ORCID: 0000-0002-4396-7057</a>
+                </p>
+
                 <div class="author-affiliations">
-                    <p><sup>1</sup>Department of Psychology, Panteion University, Athens, Greece</p>
-                    <p><sup>2</sup>Independent Researcher, E-mail: <a href="mailto:marypoga73@gmail.com">marypoga73@gmail.com</a>, Athens, Greece</p>
+                    <p><sup>1</sup>Department of Psychology, University of Western Macedonia, Florina, Greece</p>
+                    <p class="subtle">3rd km Florina – Niki, 53100 Florina, Greece</p>
+                    <p><sup>2</sup>Independent Researcher, Athens, Greece. E-mail: <a href="mailto:marypoga73@gmail.com">marypoga73@gmail.com</a> |
+                        <a href="https://orcid.org/0009-0005-3968-3501" target="_blank" rel="noopener">ORCID: 0009-0005-3968-3501</a>
+                    </p>
                 </div>
             </div>
         </footer>
